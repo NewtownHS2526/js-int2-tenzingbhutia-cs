@@ -1,0 +1,79 @@
+name: Auto-Grade Assignments
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  autograde:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm install
+      
+    - name: Run tests
+      run: npm test
+      continue-on-error: true
+      
+    - name: Generate test report
+      if: always()
+      run: |
+        npm test -- --json --outputFile=test-results.json || true
+        
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results
+        path: test-results.json
+        
+    - name: Comment PR with results
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          let results = {};
+          try {
+            const data = fs.readFileSync('test-results.json', 'utf8');
+            results = JSON.parse(data);
+          } catch (error) {
+            console.log('No test results file found');
+          }
+          
+          const totalTests = results.numTotalTests || 0;
+          const passedTests = results.numPassedTests || 0;
+          const failedTests = results.numFailedTests || 0;
+          const score = totalTests > 0 ? Math.round((passedTests / totalTests) * 100) : 0;
+          
+          const body = `## 📊 Auto-Grading Results
+          
+          **Score: ${score}%** (${passedTests}/${totalTests} tests passed)
+          
+          - ✅ Passed: ${passedTests}
+          - ❌ Failed: ${failedTests}
+          - 📝 Total: ${totalTests}
+          
+          ${failedTests > 0 ? '⚠️ Some tests failed. Please review the details above.' : '🎉 All tests passed!'}
+          `;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: body
+          });
+
