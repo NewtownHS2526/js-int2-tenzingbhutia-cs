@@ -8,7 +8,8 @@
 function greet(name) {
     return "Hello, " + name + "!";
 }
-
+const greet2 = (name)=> "Name " + name + " hi!";
+console.log(greet2("tenzing"));
 // Your task:
 // 1. Convert the above function to an arrow function (one-liner with implicit return)
 // 2. Write it as a multi-line arrow function with explicit return
@@ -20,7 +21,13 @@ function greet(name) {
 // Create an arrow function called 'calculateArea' that takes two parameters 
 // (length and width) and returns the area of a rectangle.
 // ============================================================================
+const calculateArea =(num,num2) => "area of rectangle " + num * num2;
+console.log(calculateArea(2,5))
 
+function calculateArea2 (num,num2){
+    return num * num2;
+}
+console.log(calculateArea2(2,3));
 // Your task:
 // 1. Write calculateArea as a one-liner with implicit return
 // 2. Write calculateArea with explicit return statement
