@@ -92,6 +92,8 @@ const person = {
 };
 
 // Your task:
+
+
 // 1. Run person.traditional() and person.arrow() - what happens?
 person.traditional(); // prints "Alice"
 person.arrow();       // prints undefined

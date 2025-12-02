@@ -238,7 +238,7 @@ const utils = {
 const fib = utils.memoize(n => n <= 1 ? n : fib(n - 1) + fib(n - 2));
 
 const add2 = x => x + 2;
-const square = x => x * x;
+const square23 = x => x * x;
 
 const piped = utils.pipe(add2, square)(5);
 const composed = utils.compose(square, add2)(5);

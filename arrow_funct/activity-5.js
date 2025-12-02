@@ -13,7 +13,7 @@
 
 // ============================================================================
 
-const greet = (name = "Guest") => `Hello, ${name}!`;
+const greet10 = (name = "Guest") => `Hello, ${name}!`;
 
 const calculatePrice = (price, tax = 0.1, discount = 0) =>
     price + price * tax - discount;

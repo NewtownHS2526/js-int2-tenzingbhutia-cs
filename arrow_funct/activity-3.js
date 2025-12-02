@@ -55,16 +55,16 @@ const extractUserInfo = ({ user: { name, email } }) =>
 console.log(extractUserInfo({ user: { name: "Alex", email: "alex@test.com" }}));
 
 // 4. Challenge: universal processor
-const processData = (data) => {
+const processData5S = (data) => {
     if (Array.isArray(data)) return formatUser(data);
     if (data.x !== undefined && data.y !== undefined) return distanceFromOrigin(data);
     if (data.user) return extractUserInfo(data);
     return "Unknown format";
 };
 
-console.log(processData({ x: 3, y: 4 }));
-console.log(processData(["John", "Doe", 20]));
-console.log(processData({ user: { name: "Maya", email: "maya@mail.com" }}));
+console.log(processData5S({ x: 3, y: 4 }));
+console.log(processData5S(["John", "Doe", 20]));
+console.log(processData5S({ user: { name: "Maya", email: "maya@mail.com" }}));
 
 
 // ============================================================================
@@ -129,7 +129,7 @@ const persistentCounter = createPersistentCounter();
 const increment = x => x + 1;
 
 // 2. double
-const double = x => x * 2;
+const double6 = x => x * 2;
 
 // 3. square
 const square = x => x * x;
@@ -143,10 +143,10 @@ const compose = (...fns) => value =>
     fns.reduceRight((acc, fn) => fn(acc), value);
 
 // 6. Test using number 5
-const resultPipe = pipe(increment, double, square)(5);
+const resultPipe = pipe(increment, double6, square)(5);
 // increment(5)=6 → double(6)=12 → square(12)=144
 
-const resultCompose = compose(increment, double, square)(5);
+const resultCompose = compose(increment, double6, square)(5);
 // square(5)=25 → double(25)=50 → increment(50)=51
 
 console.log("Pipe result:", resultPipe);       // 144

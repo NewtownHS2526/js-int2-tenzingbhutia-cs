@@ -1,4 +1,4 @@
-/*
+-/*
  * ACTIVITY 2: Arrow Functions vs Regular Functions
  * 
  * Problem 1: Function Declaration Analysis
@@ -8,16 +8,16 @@
 // Version 1
 function doubleV1(x) {
     return x * 2;
-}
 
+}
+console.log("V1 before declaration:", doubleV1(5)); 
 // Version 2
 const doubleV2 = (x) => x * 2;
-
+console.log("V1 before declaration:", doubleV2(5)); 
 // Your task:
 // 1. Can you call 'double' before it's declared in each version? Test your hypothesis.
 
-// Version 1: Works (hoisted)
-console.log("V1 before declaration:", doubleV1(5)); 
+
 
 // Version 2: Fails if called before declaration (NOT hoisted the same way)
 // Uncommenting the following will cause an error:
@@ -124,11 +124,11 @@ const processData = (data) => {
         .filter(item => item > 5);
 };
 
-const numbers = [3, 8, 15, 22, 5];
+const numberz = [3, 8, 15, 22, 5];
 
 // 1 & 2. Errors fixed above
 // 3. Test
-console.log("Processed:", processData(numbers));
+console.log("Processed:", processData(numberz));
 
 // 4. Handle edge cases
 console.log("Empty:", processData([]));
