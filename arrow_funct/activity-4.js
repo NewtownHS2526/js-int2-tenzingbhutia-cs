@@ -2,7 +2,6 @@
  * ACTIVITY 4: Arrow Functions in Real-World Scenarios
  * 
  * Problem 1: Data Processing Pipeline
- * You're building a data processing system for an e-commerce site.
  */
 
 const cart = [
@@ -13,76 +12,161 @@ const cart = [
 ];
 
 // Your task:
-// 1. Create an arrow function to calculate total price (price * quantity) for each item
-// 2. Create an arrow function to apply a discount of 15% if quantity is 5 or more
-// 3. Create an arrow function to add tax of 8.5% to the final price
-// 4. Create an arrow function to filter out items with total less than $10
-// 5. Challenge: Chain all operations together to get the final processed cart array. 
-//    Then calculate the grand total of all items after all transformations
+// 1. total price (price * quantity)
+const calcTotal = item => item.price * item.quantity;
+
+// 2. apply discount 15% if quantity >= 5
+const applyDiscount = item => {
+    const total = calcTotal(item);
+    return item.quantity >= 5 ? total * 0.85 : total;
+};
+
+// 3. add tax of 8.5%
+const addTax = total => total * 1.085;
+
+// 4. filter items whose final total >= $10
+const filterExpensive = total => total >= 10;
+
+// 5. CHALLENGE: Full pipeline
+const processedCart = cart
+    .map(item => ({ 
+        ...item, 
+        total: addTax(applyDiscount(item)) 
+    }))
+    .filter(item => filterExpensive(item.total));
+
+const grandTotal = processedCart
+    .reduce((sum, item) => sum + item.total, 0);
+
+console.log("Processed Cart:", processedCart);
+console.log("Grand Total:", grandTotal.toFixed(2));
 
 // ============================================================================
 // Problem 2: Arrow Functions in Object Methods
-// Create a 'ShoppingCart' object using arrow functions for methods
 // ============================================================================
 
-// Your task:
-// Create a ShoppingCart object with:
-// 1. items array property: []
-// 2. addItem(name, price) - adds an item to the cart
-// 3. removeItem(name) - removes an item by name
-// 4. getTotal() - calculates total price using arrow function
-// 5. applyCoupon(percent) - applies discount percentage
+// Arrow function version (WILL BREAK 'this')
+const ShoppingCartArrow = {
+    items: [],
 
-// Challenge: Implement this using both arrow functions and regular functions. 
-// Test how 'this' behaves differently. Which approach works better and why?
+    addItem: (name, price) => {
+        // ❌ 'this' does NOT refer to the object
+        // Arrow functions DO NOT bind 'this'
+        console.log("❌ Arrow version fails because 'this' is undefined");
+    },
+
+    removeItem: name => {},
+    getTotal: () => {},
+    applyCoupon: percent => {}
+};
+
+// Regular function version (WORKS)
+const ShoppingCart = {
+    items: [],
+
+    addItem(name, price) {
+        this.items.push({ name, price });
+    },
+
+    removeItem(name) {
+        this.items = this.items.filter(item => item.name !== name);
+    },
+
+    getTotal() {
+        return this.items.reduce((sum, item) => sum + item.price, 0);
+    },
+
+    applyCoupon(percent) {
+        const discount = percent / 100;
+        this.items = this.items.map(item => ({
+            ...item,
+            price: item.price * (1 - discount)
+        }));
+    }
+};
+
+// Test
+ShoppingCart.addItem("Laptop", 1200);
+ShoppingCart.addItem("Mouse", 25);
+ShoppingCart.applyCoupon(10);
+console.log("Final cart:", ShoppingCart.items);
+console.log("Total:", ShoppingCart.getTotal());
+
+// Explanation:
+// Arrow functions do NOT bind their own "this"
+// Therefore they SHOULD NOT be used for object methods
+// Regular functions are correct for object method context
 
 // ============================================================================
 // Problem 3: Async Operations with Arrow Functions
-// Convert Promise-based code to use arrow functions throughout
 // ============================================================================
 
-// Given code (commented out - you'll rewrite it):
-// fetch('https://api.example.com/data')
-//     .then(function(response) {
-//         return response.json();
-//     })
-//     .then(function(data) {
-//         return data.filter(function(item) {
-//             return item.status === 'active';
-//         });
-//     })
-//     .then(function(activeItems) {
-//         console.log(activeItems);
-//     })
-//     .catch(function(error) {
-//         console.error(error);
-//     });
+// Mock fetch for demonstration
+const mockFetch = url =>
+    Promise.resolve({
+        json: () => Promise.resolve([
+            { id: 1, status: "active" },
+            { id: 2, status: "inactive" },
+            { id: 3, status: "active" }
+        ])
+    });
 
-// Your task:
-// 1. Rewrite the above using arrow functions for all callbacks
-// 2. Challenge: Rewrite it again using async/await with arrow functions
-// 3. Compare all three approaches and explain their advantages
-// Note: You can test with a mock data array if fetch is not available
+// 1. Rewrite using arrow functions
+mockFetch("https://api.example.com/data")
+    .then(res => res.json())
+    .then(data => data.filter(item => item.status === "active"))
+    .then(active => console.log("Arrow Fetch:", active))
+    .catch(err => console.error(err));
+
+// 2. Async/await version
+const loadData = async () => {
+    try {
+        const res = await mockFetch("https://api.example.com/data");
+        const data = await res.json();
+        const active = data.filter(item => item.status === "active");
+        console.log("Async/Await:", active);
+    } catch (err) {
+        console.error(err);
+    }
+};
+
+loadData();
+
+// 3. Comparison:
+// - Regular .then: more verbose
+// - Arrow .then: cleaner, less code
+// - async/await: MOST readable, looks like synchronous code
 
 // ============================================================================
 // Problem 4: Arrow Functions in Higher-Order Functions
-// Create a 'createValidator' function that returns an arrow function
 // ============================================================================
 
-// Your task:
-// 1. Create a createValidator function that returns an arrow function
-//    The validator should:
-//    - Check if a value is a string
-//    - Check minimum length
-//    - Check if it matches a pattern (regex)
-//
-// 2. Example usage:
-//    const validateLength = createValidator((value) => value.length >= 5);
-//
-// 3. Challenge: Create a validator factory that can combine multiple validation rules.
-//    Use arrow functions to create validators like:
-//    - isValidEmail (must contain @ and .)
-//    - isValidPassword (at least 8 chars, one number, one letter)
-//    - isValidPhoneNumber (format: XXX-XXX-XXXX)
-//    These should be reusable and chainable
+// 1. createValidator returning an arrow function
+const createValidator = rule => value => rule(value);
 
+// Example usage:
+const validateLength = createValidator(value => value.length >= 5);
+console.log(validateLength("hello")); // true
+
+// 3. Challenge: chainable validators
+const combineValidators = (...validators) => value =>
+    validators.every(v => v(value));
+
+// Validators:
+const isValidEmail = value =>
+    /^\S+@\S+\.\S+$/.test(value);
+
+const isValidPassword = value =>
+    /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(value);
+
+const isValidPhone = value =>
+    /^\d{3}-\d{3}-\d{4}$/.test(value);
+
+// Combined validator example:
+const userValidator = combineValidators(
+    isValidEmail,
+    value => value.length <= 30
+);
+
+console.log(userValidator("test@example.com")); // true
+console.log(userValidator("bademail@com"));     // false
